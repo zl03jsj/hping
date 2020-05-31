@@ -61,9 +61,9 @@ esac
 #
 # TCL detection
 #
-for TCLPATH_TRY in "/usr/bin/" "/usr/local/bin/" "/bin/"
+for TCLPATH_TRY in "/usr/bin/" "/usr/local/bin/" "/bin/" "/usr/local/opt/tcl-tk/bin/"
 do
-	for TCLVER_TRY in "8.4" "8.3" "8.2" "8.1" "8.0"
+	for TCLVER_TRY in "8.4" "8.3" "8.2" "8.1" "8.0" "8.6"
 	do
 		if [ -z $TCLSH ]
 		then
@@ -81,7 +81,10 @@ then
 	TCL_VER=`echo puts \\$tcl_version | $TCLSH -`
 	USE_TCL='-DUSE_TCL'
 	TCL_LIB="-ltcl${TCL_VER}"
-	if [ -e /usr/include/tcl${TCL_VER} ]
+    if [ -e /usr/local/opt/tcl-tk/lib/tcl${TCL_VER} ]
+    then
+        TCL_INC="-I/usr/local/opt/tcl-tk/lib/tcl${TCL_VER}"
+    elif [ -e /usr/include/tcl${TCL_VER} ]
 	then
 		TCL_INC="-I/usr/include/tcl${TCL_VER}"
 	elif [ -e /usr/include/tcl.h ]
