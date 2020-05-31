@@ -91,3 +91,36 @@ INSTALLATION
 
 have fun,
 antirez
+
+
+
+following solution works on my mac:
+
+I found installing hping on OS X via brew required making some changes, due to brew installing tcl-tk in a non standard location.
+
+==> Caveats
+tcl-tk is keg-only, which means it was not symlinked into /usr/local,
+because tk installs some X11 headers and macOS provides an (older) Tcl/Tk.
+
+If you need to have tcl-tk first in your PATH run:
+  echo 'export PATH="/usr/local/opt/tcl-tk/bin:$PATH"' >> ~/.bash_profile
+
+For compilers to find tcl-tk you may need to set:
+  export LDFLAGS="-L/usr/local/opt/tcl-tk/lib"
+  export CPPFLAGS="-I/usr/local/opt/tcl-tk/include"
+
+For pkg-config to find tcl-tk you may need to set:
+  export PKG_CONFIG_PATH="/usr/local/opt/tcl-tk/lib/pkgconfig"
+So I had to make the following adjustments to the configure file before I ran the ./configure step:
+
+Line 64, add "/usr/local/opt/tcl-tk/bin/" to the end so the script can find the right tcl binary
+Line 66, add "8.6" to the end so the script can get the version of tcl-tk brew downloaded (check in /usr/local/opt/tcl-tk/bin for a file starting with tclsh8.? to get the correct version number.)
+Line 84, replace the line with the following, so it can get the right include location
+  if [ -e /usr/local/opt/tcl-tk/lib/tcl${TCL_VER} ]
+  then
+      TCL_INC="-I/usr/local/opt/tcl-tk/lib/tcl${TCL_VER}"
+  elif [ -e /usr/include/tcl${TCL_VER} ]
+Then in the Makefile change all references to /usr/sbin to /usr/local/bin, because on OS X we don't have any rights to write there even as sudo.
+
+After this I could resume the instructions from ./configure. If you've tried this before and failed, be sure and run make clean to remove any artifacts from previous attempts.
+
